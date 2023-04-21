@@ -187,9 +187,9 @@ contract Zabuton is ERC721, ERC4906, ERC2981, DefaultOperatorFilterer, OperatorR
             bytes(
                 string(
                     abi.encodePacked(
-                        '{"name": "Changing Number #',
+                        '{"name": "Zabuton #',
                         Strings.toString(_tokenId),
-                        '","description": "Changing Number is amazing","attributes": [{"trait_type":"Number","value":"',
+                        '","description": "Zabuton is amazing","attributes": [{"trait_type":"Number","value":"',
                         numberStr,
                         '", "nftStatus": "',
                         nftState,

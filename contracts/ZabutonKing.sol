@@ -38,8 +38,8 @@ contract ZabutonKing is ERC721, ERC721Enumerable, ERC721Burnable, OperatorRole, 
         _safeMint(to, tokenId);
 
         // reset Zabuton to 1
-        IZabuton changingNuberContract = IZabuton(zabutonAddress);
-        changingNuberContract.changeNumber(tokenId, 1);
+        IZabuton zabutonContract = IZabuton(zabutonAddress);
+        zabutonContract.changeNumber(tokenId, 1);
     }
 
     function tokenURI(uint256 _tokenId) public view override returns (string memory) {
@@ -64,9 +64,9 @@ contract ZabutonKing is ERC721, ERC721Enumerable, ERC721Burnable, OperatorRole, 
     }
 
     function isKing(address to, uint256 _tokenId) internal view returns (bool) {
-        IZabuton changingNuberContract = IZabuton(zabutonAddress);
+        IZabuton zabutonContract = IZabuton(zabutonAddress);
 
-        if (changingNuberContract.ownerOf(_tokenId) != to || changingNuberContract.getNumber(_tokenId) != 10) {
+        if (zabutonContract.ownerOf(_tokenId) != to || zabutonContract.getNumber(_tokenId) != 10) {
             return false;
         }
         return true;

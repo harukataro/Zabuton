@@ -83,8 +83,8 @@ describe("Zabuton", function () {
       let metaData = Buffer.from(tokenURI.split(",")[1], 'base64').toString('ascii');
       //console.log(metaData);
       metaData = JSON.parse(metaData);
-      expect(metaData.name).to.equal("Changing Number #1");
-      expect(metaData.description).to.equal("Changing Number is amazing");
+      expect(metaData.name).to.equal("Zabuton #1");
+      expect(metaData.description).to.equal("Zabuton is amazing");
       expect(metaData.attributes[0].trait_type).to.equal("Number");
       expect(metaData.attributes[0].value).to.equal("1");
       let image = metaData.image.split(",")[1];
@@ -103,8 +103,8 @@ describe("Zabuton", function () {
       let metaData = Buffer.from(tokenURI.split(",")[1], 'base64').toString('ascii');
       //console.log(metaData);
       metaData = JSON.parse(metaData);
-      expect(metaData.name).to.equal("Changing Number #1");
-      expect(metaData.description).to.equal("Changing Number is amazing");
+      expect(metaData.name).to.equal("Zabuton #1");
+      expect(metaData.description).to.equal("Zabuton is amazing");
       expect(metaData.attributes[0].trait_type).to.equal("Number");
       expect(metaData.attributes[0].value).to.equal("2");
       let image = metaData.image.split(",")[1];
