@@ -22,12 +22,9 @@ contract Zabuton is ERC721, ERC4906, ERC2981, DefaultOperatorFilterer, OperatorR
 
     mapping(uint256 => uint256) private myNumber;
     mapping(address => bool) private allowedMinters;
-    mapping(uint256 => bool) private lockStatus;
     uint256 private numOfAllowedMinters;
     bool private mintable;
     bool private publicMint;
-    uint256 private loser;
-    uint256 private winner;
     address private zabutonImageAddress;
 
     event moveRandom(uint256 winner, uint256 loser);
@@ -100,73 +97,16 @@ contract Zabuton is ERC721, ERC4906, ERC2981, DefaultOperatorFilterer, OperatorR
     function changeNumber(uint256 _tokenId, uint256 _number) public onlyOperator {
         require(_exists(_tokenId), "tokenId must be exist");
         require(_number <= 10, "Number must be smaller than 10");
-        require(lockStatus[_tokenId] == false, "Token is locked");
         myNumber[_tokenId] = _number;
         emit MetadataUpdate(_tokenId);
     }
 
     /// @dev ramdomly increase number metadata of one of token and decrease number metadata of another token
     /// this is for testing purpose as public. anyone can call this function.
-    function randomMove() public onlyOperator {
-        uint256 tokenNum = currentTokenId.current();
-        uint256 prevWinToken = winner;
-        uint256 prevLoseToken = loser;
-
-        // random number generator
-        bytes32 blockHash = blockhash(block.number - 1);
-        uint256 rId1 = (uint256(blockHash) % (tokenNum - 1 + 1)) + 1;
-        uint256 rId2 = (uint256(keccak256(abi.encodePacked(blockHash, rId1))) % (tokenNum - 1 + 1)) + 1;
-        if (rId1 == rId2) {
-            if (rId2 == tokenNum) {
-                rId2 = 1;
-            } else {
-                rId2 = rId2 + 1;
-            }
-        }
-        uint256 winToken = rId1;
-        uint256 loseToken = rId2;
-
-        if (myNumber[winToken] < 10) {
-            myNumber[winToken] += 1;
-        }
-        if (myNumber[loseToken] > 0 && lockStatus[loseToken] == false) {
-            myNumber[loseToken] -= 1;
-        }
-        winner = winToken;
-        loser = loseToken;
-        emit MetadataUpdate(prevWinToken);
-        emit MetadataUpdate(prevLoseToken);
-        emit MetadataUpdate(winToken);
-        emit MetadataUpdate(loseToken);
-        emit moveRandom(winToken, loseToken);
-    }
 
     ///@dev get number metadata of Token Id
     function getNumber(uint256 _tokenId) public view returns (uint256) {
         return myNumber[_tokenId];
-    }
-
-    /// @dev get winner Token Id
-    function getWinner() public view returns (uint256) {
-        return winner;
-    }
-
-    /// @dev get loser Token Id
-    function getLoser() public view returns (uint256) {
-        return loser;
-    }
-
-    // ******************** lock function ******************** //
-    function lockNFT(uint256 _tokenId, bool _status) public {
-        require(ownerOf(_tokenId) == msg.sender, "You are not the owner of this token");
-        if (lockStatus[_tokenId] != _status) {
-            lockStatus[_tokenId] = _status;
-            emit LockStatusChange(_tokenId, _status);
-        }
-    }
-
-    function getLockStatus(uint256 _tokenId) public view returns (bool) {
-        return lockStatus[_tokenId];
     }
 
     // ******************** tokenURI ******************** //
@@ -176,10 +116,6 @@ contract Zabuton is ERC721, ERC4906, ERC2981, DefaultOperatorFilterer, OperatorR
         require(_exists(_tokenId), "tokenId must be exist");
         uint256 number = myNumber[_tokenId];
         string memory numberStr = Strings.toString(myNumber[_tokenId]);
-        string memory nftState = _tokenId == winner ? "WIN" : _tokenId == loser ? "LOSE" : "";
-        if (lockStatus[_tokenId]) {
-            nftState = "LOCKED";
-        }
 
         IZabutonImage zabutonImage = IZabutonImage(zabutonImageAddress);
 
@@ -191,8 +127,6 @@ contract Zabuton is ERC721, ERC4906, ERC2981, DefaultOperatorFilterer, OperatorR
                         Strings.toString(_tokenId),
                         '","description": "Zabuton is amazing","attributes": [{"trait_type":"Number","value":"',
                         numberStr,
-                        '", "nftStatus": "',
-                        nftState,
                         '"}],"image": "data:image/svg+xml;base64,',
                         Base64.encode(bytes(zabutonImage.getImage(number))),
                         '"}'
@@ -232,12 +166,12 @@ contract Zabuton is ERC721, ERC4906, ERC2981, DefaultOperatorFilterer, OperatorR
         publicMint = _status;
     }
 
-    /// @dev get Zabuton address for URI building
+    /// @dev get ZabutonImage contract address for URI building
     function getZabutonImageContractAddress() public view returns (address) {
         return zabutonImageAddress;
     }
 
-    /// @dev set Zabuton address for URI building
+    /// @dev set ZabutonImage contract address for URI building
     function setZabutonImageContractAddress(address _zabutonImageAddress) public onlyOwner {
         zabutonImageAddress = _zabutonImageAddress;
     }

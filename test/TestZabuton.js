@@ -125,40 +125,6 @@ describe("Zabuton", function () {
       }
     });
 
-    // ********************************************* //
-    // ********** add remove random tests ********** //
-    // ********************************************* //
-
-    it("Should work random", async function () {
-      await token721.setMintable(true);
-      await token721.addAllowedMinters([a1.address, a2.address, a3.address, a4.address]);
-      await token721.connect(a1).mint();
-      await token721.connect(a2).mint();
-      await token721.connect(a3).mint();
-      await token721.connect(a4).mint();
-      await token721.randomMove();
-
-      let winner = await token721.connect(a1).getWinner();
-      let loser = await token721.connect(a1).getLoser();
-      //console.log("winner:", Number(winner));
-      //console.log("loser:", Number(loser));
-
-      let tokenURI = await token721.tokenURI(Number(winner));
-      let metaData = Buffer.from(tokenURI.split(",")[1], 'base64').toString('ascii');
-      metaData = JSON.parse(metaData);
-      let image = metaData.image.split(",")[1];
-      image = Buffer.from(image, 'base64').toString('ascii');
-      //console.log("image:", image);
-      fs.writeFileSync("tmp/testWin.svg", image);
-
-      let tokenURI2 = await token721.tokenURI(Number(loser));
-      let metaData2 = Buffer.from(tokenURI2.split(",")[1], 'base64').toString('ascii');
-      metaData2 = JSON.parse(metaData2);
-      let image2 = metaData2.image.split(",")[1];
-      image2 = Buffer.from(image2, 'base64').toString('ascii');
-      fs.writeFileSync("tmp/testLose.svg", image2);
-    });
-
     //ERC165 related
     it("implements ERC721", async function () {
       const result = await token721.supportsInterface("0x80ac58cd");
@@ -190,7 +156,6 @@ describe("Zabuton", function () {
       await token721.connect(a1).mint();
       await token721.connect(a2).mint();
       await expect(token721.changeNumber(1,2)).emit(token721, "MetadataUpdate").withArgs(1);
-      await expect(token721.randomMove()).emit(token721, "MetadataUpdate").withArgs(1||2);
     });
 
     it('should stored ether in contract', async () => {
@@ -413,47 +378,6 @@ describe("Zabuton", function () {
     await expect(token721.changeNumber(1,11)).to.be.revertedWith("Number must be smaller than 10");
   });
 
-  // test randomMove not over 10
-  it("Should work randomMove not over 10", async function () {
-    await token721.setMintable(true);
-    await token721.addAllowedMinters([a1.address, a2.address]);
-    await token721.connect(a1).mint();
-    await token721.connect(a2).mint();
-
-    await token721.changeNumber(1, 10);
-    await token721.changeNumber(2, 10);
-
-    await token721.randomMove();
-    let number1 = await token721.connect(a1).getNumber(1);
-    let number2 = await token721.connect(a1).getNumber(2);
-    let winner = await token721.connect(a1).getWinner();
-
-    if(winner == 1) {
-      expect(number1).to.be.equal(10);
-    } else {
-      expect(number2).to.be.equal(10);
-    }
-  });
-  // test randomMove not less than 0
-  it("Should work randomMove not less than 0", async function () {
-    await token721.setMintable(true);
-    await token721.addAllowedMinters([a1.address, a2.address]);
-    await token721.connect(a1).mint();
-    await token721.connect(a2).mint();
-    await token721.changeNumber(1, 0);
-    await token721.changeNumber(2, 0);
-    await token721.randomMove();
-    let number1 = await token721.connect(a1).getNumber(1);
-    let number2 = await token721.connect(a1).getNumber(2);
-    let loser = await token721.connect(a1).getLoser();
-    //console.log("loser:", loser);
-    if(loser == 1) {
-      expect(number1).to.be.equal(0);
-    } else {
-      expect(number2).to.be.equal(0);
-    }
-  });
-
   //token URI require existing token
   it("Should not work tokeURI not existing token", async function () {
     await token721.setMintable(true);
@@ -479,38 +403,5 @@ describe("Zabuton", function () {
     await expect(token721.connect(a1).setDefaultRoyalty(a1.address, 10)).to.be.revertedWith("Ownable: caller is not the owner");
   });
 
-  // Lock function by holder
-  it("Should work Lock Unlock by holder", async function () {
-    await token721.ownerMintTo(a1.address);
-    await token721.connect(a1).lockNFT(1, true);
-    let status = await token721.connect(a1).getLockStatus(1);
-    expect(status).to.be.equal(true);
-    await token721.connect(a1).lockNFT(1, false);
-    status = await token721.connect(a1).getLockStatus(1);
-    expect(status).to.be.equal(false);
-  });
 
-  // Lock state can not change number
-  it("Should not work Lock state can not change number", async function () {
-    await token721.ownerMintTo(a1.address);
-    await token721.connect(a1).lockNFT(1, true);
-    await expect(token721.connect(a1).changeNumber(1, 1)).to.be.revertedWith("Err: caller does not have the Operator role");
-  });
-
-  // Lock state can not be loser
-  it("Should not work Lock state can not be loser", async function () {
-    await token721.ownerMintTo(a1.address);
-    await token721.ownerMintTo(a2.address);
-    await token721.changeNumber(1, 10);
-    await token721.changeNumber(2, 10);
-    await token721.connect(a1).lockNFT(1, true);
-    await token721.connect(a2).lockNFT(2, true);
-    for(let i = 0; i < 100; i++) {
-      await token721.randomMove();
-      let number1 = await token721.connect(a1).getNumber(1);
-      let number2 = await token721.connect(a1).getNumber(2);
-      expect(number1).to.be.equal(10);
-      expect(number2).to.be.equal(10);
-    }
-  })
 });
