@@ -2,5 +2,5 @@
 pragma solidity ^0.8.13;
 
 interface IZabutonImage {
-    function getImage(uint256 num) external pure returns (string memory);
+    function getImage(uint256 num) external view returns (string memory);
 }
