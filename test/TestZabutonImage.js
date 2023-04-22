@@ -34,10 +34,17 @@ describe("ZabutonImage", function () {
         expect(zabuton).to.equal(newZabuton);
       });
 
-      it("Should Update frame svgBlock ", async function () {
+      it("Should Update fore frame svgBlock ", async function () {
         const newFrame = '<path fill="#40FF5C" d="M57 58h5v10h5v9h4V49h5v47H66v-9h-4V77"/>';
-        await za.setFrame(newFrame);
-        const frame = await za.getFrame();
+        await za.setForeFrame(newFrame);
+        const frame = await za.getForeFrame();
+        expect(frame).to.equal(newFrame);
+      });
+
+      it("Should Update back frame svgBlock ", async function () {
+        const newFrame = '<path fill="#40FF5C" d="M57 58h5v10h5v9h4V49h5v47H66v-9h-4V77"/>';
+        await za.setBackFrame(newFrame);
+        const frame = await za.getBackFrame();
         expect(frame).to.equal(newFrame);
       });
 
