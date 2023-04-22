@@ -89,6 +89,11 @@ contract Zabuton is ERC721, ERC4906, ERC2981, DefaultOperatorFilterer, OperatorR
         return allowedMinters[_minter];
     }
 
+    /// @dev get number of Allow list address
+    function getNumOfAllowedMinters() public view onlyOwner returns (uint256) {
+        return numOfAllowedMinters;
+    }
+
     // ******************** metadata control ******************** //
     // metadata control
     /// @dev change Number metadata for specific token id

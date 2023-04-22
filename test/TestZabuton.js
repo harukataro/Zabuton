@@ -73,6 +73,12 @@ describe("Zabuton", function () {
     //   await expect(token721.ownerMintTo(a1.address)).to.be.revertedWith("Mint limit exceeded");
     // });
 
+    // Allow list operation tests
+    it("Should correct number of minter in allow list", async function () {
+      await token721.addAllowedMinters([a1.address, a2.address, a3.address]);
+      let minterCount = await token721.getNumOfAllowedMinters();
+      expect(minterCount).to.equal(3);
+    });
 
     it("Should output tokenURI", async function () {
       await token721.setMintable(true);
