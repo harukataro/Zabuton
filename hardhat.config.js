@@ -3,6 +3,7 @@ require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 require("@nomiclabs/hardhat-etherscan");
 require('hardhat-contract-sizer');
+require("hardhat-gas-reporter");
 
 module.exports = {
   solidity: "0.8.17",
@@ -28,6 +29,11 @@ module.exports = {
   etherscan: {
     //apiKey: process.env.POLYGONSCAN_API_KEY
     apiKey: process.env.ETHERSCAN_API_KEY
+  },
+  gasReporter: {
+    currency: 'USD',
+    enabled: true,
+    token: 'ETH'
   },
 };
 
