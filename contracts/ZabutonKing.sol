@@ -32,7 +32,7 @@ contract ZabutonKing is ERC721, ERC721Enumerable, ERC721Burnable, OperatorRole, 
 
     function safeMint(uint256 tokenId) public {
         address to = msg.sender;
-        require(isHolder[to] == false, "You already have a NumberKing");
+        require(isHolder[to] == false, "You already have a ZabutonKing");
         require(isKing(to, tokenId), "You don't have a Zabuton with number 10");
         isHolder[to] = true;
         _safeMint(to, tokenId);
