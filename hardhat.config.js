@@ -31,9 +31,11 @@ module.exports = {
     apiKey: process.env.ETHERSCAN_API_KEY
   },
   gasReporter: {
-    currency: 'USD',
+    currency: 'JPY',
     enabled: true,
-    token: 'ETH'
+    token: 'ETH',
+    gasPriceApi: "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice",
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
   },
 };
 
