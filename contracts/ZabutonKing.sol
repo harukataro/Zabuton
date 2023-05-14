@@ -8,27 +8,18 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "base64-sol/base64.sol";
 import "./ERC4906.sol";
 import "./IZabuton.sol";
+import "./IZabutonImage.sol";
 import "./OperatorRole.sol";
 import "hardhat/console.sol";
 
 contract ZabutonKing is ERC721, ERC721Enumerable, ERC721Burnable, OperatorRole, ERC4906 {
-    string[8] imageURI;
-    mapping(address => bool) isHolder;
-    mapping(uint256 => uint256) rank;
+    mapping(address => bool) private isHolder;
+    mapping(uint256 => uint256) private rank;
     address[] private operators;
-    address zabutonAddress; // contract address for Zabuton as reference
+    address private zabutonAddress; // contract address for Zabuton as reference
+    address private zabutonKingImageAddress; // contract address for Image fetch
 
-    constructor() ERC721("ZabutonKing", "ZKNG") {
-        zabutonAddress = 0xbCD589571C4D3eB22775D65bB30c52e6E2eF462F;
-        imageURI[0] = "https://nftnews.jp/wp-content/uploads/2023/02/King_0.png";
-        imageURI[1] = "https://nftnews.jp/wp-content/uploads/2023/02/King_1.png";
-        imageURI[2] = "https://nftnews.jp/wp-content/uploads/2023/02/King_2.png";
-        imageURI[3] = "https://nftnews.jp/wp-content/uploads/2023/02/King_3.png";
-        imageURI[4] = "https://nftnews.jp/wp-content/uploads/2023/02/King_4.png";
-        imageURI[5] = "https://nftnews.jp/wp-content/uploads/2023/02/King_5.png";
-        imageURI[6] = "https://nftnews.jp/wp-content/uploads/2023/02/King_6.png";
-        imageURI[7] = "https://nftnews.jp/wp-content/uploads/2023/02/King_7.png";
-    }
+    constructor() ERC721("ZabutonKing", "ZKNG") {}
 
     function safeMint(uint256 tokenId) public {
         address to = msg.sender;
@@ -45,20 +36,26 @@ contract ZabutonKing is ERC721, ERC721Enumerable, ERC721Burnable, OperatorRole, 
     function tokenURI(uint256 _tokenId) public view override returns (string memory) {
         require(_exists(_tokenId), "tokenId must be exist");
         uint256 myRank = rank[_tokenId];
-        string memory meta = string(
-            abi.encodePacked(
-                '{"name": "Number King #',
-                Strings.toString(_tokenId),
-                '","description": "Number King is a NFT that can be minted by a user who has a Zabuton with number 10.",',
-                '"attributes": [{"trait_type":"Rank","value":"',
-                Strings.toString(myRank),
-                '"}],',
-                '"image":"',
-                imageURI[myRank],
-                '"}'
+
+        require(zabutonKingImageAddress != address(0), "ZabutonKingImage address is not set");
+        IZabutonImage zabutonKingImage = IZabutonImage(zabutonKingImageAddress);
+
+        string memory json = Base64.encode(
+            bytes(
+                string(
+                    abi.encodePacked(
+                        '{"name": "Zabuton King #',
+                        Strings.toString(_tokenId),
+                        '","description": "Zabuton King is a NFT that can be minted by a user who has a Zabuton with number 10.",',
+                        '"attributes": [{"trait_type":"Rank","value":"',
+                        Strings.toString(myRank),
+                        '"}],"image": "data:image/svg+xml;base64,',
+                        Base64.encode(bytes(zabutonKingImage.getImage(myRank))),
+                        '"}'
+                    )
+                )
             )
         );
-        string memory json = Base64.encode(bytes(string(abi.encodePacked(meta))));
         string memory output = string(abi.encodePacked("data:application/json;base64,", json));
         return output;
     }
@@ -72,16 +69,20 @@ contract ZabutonKing is ERC721, ERC721Enumerable, ERC721Burnable, OperatorRole, 
         return true;
     }
 
-    function updateImageURI(string[8] memory _imageURI) public onlyOperator {
-        imageURI = _imageURI;
-    }
-
     function getZabutonContractAddress() public view onlyOperator returns (address) {
         return zabutonAddress;
     }
 
     function setZabutonContractAddress(address _address) public onlyOperator {
         zabutonAddress = _address;
+    }
+
+    function getZabutonKingImageContractAddress() public view onlyOperator returns (address) {
+        return zabutonKingImageAddress;
+    }
+
+    function setZabutonKingImageContractAddress(address _address) public onlyOperator {
+        zabutonKingImageAddress = _address;
     }
 
     function getRank(uint256 _tokenId) public view returns (uint256) {
@@ -91,7 +92,7 @@ contract ZabutonKing is ERC721, ERC721Enumerable, ERC721Burnable, OperatorRole, 
 
     function setRank(uint256 _tokenId, uint256 _rank) public onlyOperator {
         require(_exists(_tokenId), "tokenId must be exist for setRank");
-        require(0 <= _rank && _rank <= 7, "rank must be 0 to 7");
+        require(0 <= _rank && _rank <= 4, "rank must be 0 to 4");
         rank[_tokenId] = _rank;
         emit MetadataUpdate(_tokenId);
     }

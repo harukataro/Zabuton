@@ -1,6 +1,7 @@
 // tests/ZabutonKing.test.js
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+let fs = require("fs");
 
 function convertToJason(str) {
   let output = Buffer.from(str.split(",")[1], 'base64').toString('ascii');
@@ -10,6 +11,7 @@ function convertToJason(str) {
 describe("ZabutonKing", function () {
   let zabutonKing;
   let zabuton;
+  let zabutonKingImage;
   let owner;
   let holder;
   let holder2;
@@ -26,8 +28,13 @@ describe("ZabutonKing", function () {
     const Zabuton = await ethers.getContractFactory("Zabuton");
     zabuton = await Zabuton.deploy();
 
+    const ZabutonKingImage = await ethers.getContractFactory("ZabutonKingImage");
+    zabutonKingImage = await ZabutonKingImage.deploy();
+
     // ZabutonKing に Zabuton のアドレスを登録
     await zabutonKing.setZabutonContractAddress(zabuton.address);
+    // ZabutonKing に ZabutonKingImageのアドレスを登録
+    await zabutonKing.setZabutonKingImageContractAddress(zabutonKingImage.address);
     // Zabuton に ZabutonKing のアドレスを登録
     await zabuton.setAllowedContract(zabutonKing.address);
 
@@ -88,11 +95,30 @@ describe("ZabutonKing", function () {
     zabutonKing.connect(holder).safeMint(kingTokenId)
     const uri = await zabutonKing.connect(holder).tokenURI(kingTokenId);
     let metaData = convertToJason(uri);
-    expect(metaData.name).to.equal("Number King #1");
-    expect(metaData.description).to.equal("Number King is a NFT that can be minted by a user who has a Zabuton with number 10.");
+    expect(metaData.name).to.equal("Zabuton King #1");
+    expect(metaData.description).to.equal("Zabuton King is a NFT that can be minted by a user who has a Zabuton with number 10.");
     expect(metaData.attributes[0].trait_type).to.equal("Rank");
     expect(metaData.attributes[0].value).to.equal("0");
-    expect(metaData.image).to.equal("https://nftnews.jp/wp-content/uploads/2023/02/King_0.png");
+  });
+
+  it("Should publish proper image", async function () {
+    zabutonKing.connect(holder).safeMint(kingTokenId)
+    const uri = await zabutonKing.connect(holder).tokenURI(kingTokenId);
+    let metaData = convertToJason(uri);
+    let image  = metaData.image.split(",")[1];
+    image = Buffer.from(image, 'base64').toString('ascii');
+    console.log("image",image);
+    fs.writeFileSync("tmp/imageKingTest0.svg", image);
+
+    for(let i = 1; i <= 4; i++){
+      zabutonKing.setRank(kingTokenId, i);
+      const uri = await zabutonKing.connect(holder).tokenURI(kingTokenId);
+      let metaData = convertToJason(uri);
+      let image  = metaData.image.split(",")[1];
+      image = Buffer.from(image, 'base64').toString('ascii');
+      //console.log("image",image);
+      fs.writeFileSync("tmp/imageKingTest"+i+".svg", image);
+    }
   });
 
   it("Should work set Rank", async function () {

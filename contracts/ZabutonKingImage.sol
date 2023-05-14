@@ -21,7 +21,7 @@ contract ZabutonKingImage is IZabutonImage, Ownable {
         kingBg[3] = "C40000";
         kingBg[4] = "FDD023";
 
-        commonFrame = '}</style><path class="b" d="M0,0h1080v1080H0V0z"/><path class="b" style="stroke: #000; stroke-width: 71" d="M65,65h950v950H65V65z"/><path style="fill:#40FF5C" d="M290,40h9v47h-9V40z M68,87V40h-5v28h-4v-9h-5V49h-5v-9h-9v47h5V59h4v9h5v10h4v9H68z M233,40h10v47h-10V40z M129,87h24v5h-24V87z M281,64V45h-5v-5h-24v47h10V68h9v19h10V68h-5v-4H281z M271,64h-9V45h9V64z M224,49v-9h-24v5h-5v38h5v4h15v-5 h4v5h5V63h-14v5h4v14h-9V45h14v4H224z M181,87v-4h5V45h-5v-5h-19v5h-5v38h5v4H181z M167,45h9v37h-9V45z M77,40v47h10V64h9v-5h-9V45 h14v-5H77z M120,87V45h9v-5h-28v5h9v42H120z';
+        commonFrame = '}</style><path class="b" d="M0,0h1080v1080H0V0z"/><path class="b" style="stroke: #000; stroke-width: 71" d="M65,65h950v950H65z"/><path style="fill:#40FF5C" d="M290,40h9v47h-9V40z M68,87V40h-5v28h-4v-9h-5V49h-5v-9h-9v47h5V59h4v9h5v10h4v9H68z M233,40h10v47h-10V40z M129,87h24v5h-24V87z M281,64V45h-5v-5h-24v47h10V68h9v19h10V68h-5v-4H281z M271,64h-9V45h9V64z M224,49v-9h-24v5h-5v38h5v4h15v-5 h4v5h5V63h-14v5h4v14h-9V45h14v4H224z M181,87v-4h5V45h-5v-5h-19v5h-5v38h5v4H181z M167,45h9v37h-9V45z M77,40v47h10V64h9v-5h-9V45 h14v-5H77z M120,87V45h9v-5h-28v5h9v42H120z';
 
         kingFrame[
             0
