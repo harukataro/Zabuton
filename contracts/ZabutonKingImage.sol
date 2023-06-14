@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./IZabutonImage.sol";
+import "./interfaces/IZabutonImage.sol";
 
 contract ZabutonKingImage is IZabutonImage, Ownable {
     string private svgHeader;

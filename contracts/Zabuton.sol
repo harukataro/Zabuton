@@ -9,7 +9,7 @@ import "operator-filter-registry/src/DefaultOperatorFilterer.sol";
 import "base64-sol/base64.sol";
 import "./ERC4906.sol";
 import "./OperatorRole.sol";
-import "./IZabutonImage.sol";
+import "./interfaces/IZabutonImage.sol";
 import "hardhat/console.sol";
 
 contract Zabuton is ERC721, ERC4906, ERC2981, DefaultOperatorFilterer, OperatorRole {

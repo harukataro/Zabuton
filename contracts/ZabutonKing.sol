@@ -7,8 +7,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "base64-sol/base64.sol";
 import "./ERC4906.sol";
-import "./IZabuton.sol";
-import "./IZabutonImage.sol";
+import "./interfaces/IZabuton.sol";
+import "./interfaces/IZabutonImage.sol";
 import "./OperatorRole.sol";
 import "hardhat/console.sol";
 
